@@ -4,13 +4,13 @@
 
 using Storage_T = std::vector<int>;
 
-const int SEARCH_LIMIT = 100000;
+const int SEARCH_LIMIT = 3000;
 const int LENGTH_LIMIT = 20;
 std::vector<Storage_T> allFactors(SEARCH_LIMIT);
 
 // from https://stackoverflow.com/questions/23287/algorithm-to-find-largest-prime-factor-of-a-number
 Storage_T getPrimeFactors(int n) {
-    // std::cout << "factors:\n";
+    // std::cout << n << " factors:\n";
 
     Storage_T factors;
 
@@ -18,12 +18,13 @@ Storage_T getPrimeFactors(int n) {
         while (n % d == 0) {
             factors.push_back(d);
             n /= d;
-            // std::cout << " " << i;
+            // std::cout << " " << d;
         }
         d++;
         if (d * d > n) {
             if (n > 1) {
                 factors.push_back(n);
+                // std::cout << " " << n;
                 break;
             }
         }
@@ -34,7 +35,7 @@ Storage_T getPrimeFactors(int n) {
 
 void generateAllFactors(std::vector<Storage_T>& factors) {
     for (int i = 0; i < SEARCH_LIMIT; i++) {
-        factors.push_back(getPrimeFactors(i));
+        factors[i] = getPrimeFactors(i);
     }
 }
 
