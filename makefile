@@ -13,5 +13,7 @@ run:
 	time ./generator > output
 	open output
 
+all: generator run 
+
 clean:
 	rm -f generator src/*.o

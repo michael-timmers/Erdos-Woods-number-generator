@@ -7,19 +7,25 @@ using Storage_T = std::vector<int>;
 const int SEARCH_LIMIT = 100000;
 const int LENGTH_LIMIT = 20;
 
-Storage_T getPrimeFactors(int num) {
-    Storage_T factors;
-
+// from https://stackoverflow.com/questions/23287/algorithm-to-find-largest-prime-factor-of-a-number
+void getPrimeFactors(int n, Storage_T& factors) {
     // std::cout << "factors:\n";
 
-    for (int i = 2; i <= std::ceil(std::sqrt(num)); i++) {
-        if (num % i == 0) {
-            factors.push_back(i);
+    for (int d = 2; n > 1;) {
+        while (n % d == 0) {
+            factors.push_back(d);
+            n /= d;
             // std::cout << " " << i;
+        }
+        d++;
+        if (d * d > n) {
+            if (n > 1) {
+                factors.push_back(n);
+                break;
+            }
         }
     }
     // std::cout << "\n";
-    return factors;
 }
 
 bool hasIntersection(Storage_T set1, Storage_T set2) {
@@ -31,7 +37,8 @@ bool hasIntersection(Storage_T set1, Storage_T set2) {
 bool doesRangeShareFactors(int currentStart, int currentLength, Storage_T factors) {
     for (int i = 1; i <= currentLength; i++) {
         // std::cout << "i" << currentStart + i << " ";
-        Storage_T currentFactors = getPrimeFactors(currentStart + i);
+        Storage_T currentFactors;
+        getPrimeFactors(currentStart + i, currentFactors);
         if (!hasIntersection(factors, currentFactors)) {
             // std::cout << "no intersection:" << currentStart + i << "\n";
             return false;
@@ -44,10 +51,12 @@ int main() {
     Storage_T theNumbers;
     for (int start = 2; start < SEARCH_LIMIT; start++) {
         // std::cout << "s" << start << " ";
-        Storage_T startFactors = getPrimeFactors(start);
+        Storage_T startFactors;
+        getPrimeFactors(start, startFactors);
         for (int length = 2; length < LENGTH_LIMIT; length++) {
             // std::cout << start + length << " ";
-            Storage_T endFactors = getPrimeFactors(start + length);
+            Storage_T endFactors;
+            getPrimeFactors(start + length, endFactors);
             Storage_T factors;
             std::set_union(startFactors.begin(), startFactors.end(), endFactors.begin(), endFactors.end(), std::inserter(factors, factors.begin()));
 
