@@ -1,0 +1,6 @@
+generator
+output
+
+**/*.o
+
+**/.DS_store
