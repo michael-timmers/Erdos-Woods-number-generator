@@ -8,8 +8,10 @@ const int SEARCH_LIMIT = 100000;
 const int LENGTH_LIMIT = 20;
 
 // from https://stackoverflow.com/questions/23287/algorithm-to-find-largest-prime-factor-of-a-number
-void getPrimeFactors(int n, Storage_T& factors) {
+Storage_T getPrimeFactors(int n) {
     // std::cout << "factors:\n";
+
+    Storage_T factors;
 
     for (int d = 2; n > 1;) {
         while (n % d == 0) {
@@ -26,6 +28,13 @@ void getPrimeFactors(int n, Storage_T& factors) {
         }
     }
     // std::cout << "\n";
+    return factors;
+}
+
+void generateAllFactors(std::vector<Storage_T>& factors) {
+    for (int i = 0; i < SEARCH_LIMIT; i++) {
+        factors.push_back(getPrimeFactors(i));
+    }
 }
 
 bool hasIntersection(Storage_T set1, Storage_T set2) {
@@ -49,18 +58,19 @@ bool doesRangeShareFactors(int currentStart, int currentLength, Storage_T factor
 
 int main() {
     Storage_T theNumbers;
+    std::vector<Storage_T> factors(SEARCH_LIMIT);
+    generateAllFactors(factors);
+
     for (int start = 2; start < SEARCH_LIMIT; start++) {
         // std::cout << "s" << start << " ";
-        Storage_T startFactors;
-        getPrimeFactors(start, startFactors);
+        Storage_T startFactors = factors[start];
         for (int length = 2; length < LENGTH_LIMIT; length++) {
             // std::cout << start + length << " ";
-            Storage_T endFactors;
-            getPrimeFactors(start + length, endFactors);
-            Storage_T factors;
-            std::set_union(startFactors.begin(), startFactors.end(), endFactors.begin(), endFactors.end(), std::inserter(factors, factors.begin()));
+            Storage_T endFactors = factors[start + length];
+            Storage_T boundsFactors;
+            std::set_union(startFactors.begin(), startFactors.end(), endFactors.begin(), endFactors.end(), std::inserter(boundsFactors, boundsFactors.begin()));
 
-            if (doesRangeShareFactors(start, length, factors)) {
+            if (doesRangeShareFactors(start, length, boundsFactors)) {
                 std::cout << "start:" << start << " length:" << length << "\n";
                 theNumbers.push_back(length);
             }
