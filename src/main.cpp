@@ -6,6 +6,7 @@ using Storage_T = std::vector<int>;
 
 const int SEARCH_LIMIT = 100000;
 const int LENGTH_LIMIT = 20;
+std::vector<Storage_T> allFactors(SEARCH_LIMIT);
 
 // from https://stackoverflow.com/questions/23287/algorithm-to-find-largest-prime-factor-of-a-number
 Storage_T getPrimeFactors(int n) {
@@ -43,12 +44,11 @@ bool hasIntersection(Storage_T set1, Storage_T set2) {
     return intersection.size() != 0;
 }
 
-bool doesRangeShareFactors(int currentStart, int currentLength, Storage_T factors) {
+bool doesRangeShareFactors(int currentStart, int currentLength, Storage_T boundsFactors) {
     for (int i = 1; i <= currentLength; i++) {
         // std::cout << "i" << currentStart + i << " ";
-        Storage_T currentFactors;
-        getPrimeFactors(currentStart + i, currentFactors);
-        if (!hasIntersection(factors, currentFactors)) {
+        Storage_T currentFactors = allFactors[currentStart + i];
+        if (!hasIntersection(boundsFactors, currentFactors)) {
             // std::cout << "no intersection:" << currentStart + i << "\n";
             return false;
         }
@@ -58,15 +58,15 @@ bool doesRangeShareFactors(int currentStart, int currentLength, Storage_T factor
 
 int main() {
     Storage_T theNumbers;
-    std::vector<Storage_T> factors(SEARCH_LIMIT);
-    generateAllFactors(factors);
+
+    generateAllFactors(allFactors);
 
     for (int start = 2; start < SEARCH_LIMIT; start++) {
         // std::cout << "s" << start << " ";
-        Storage_T startFactors = factors[start];
+        Storage_T startFactors = allFactors[start];
         for (int length = 2; length < LENGTH_LIMIT; length++) {
             // std::cout << start + length << " ";
-            Storage_T endFactors = factors[start + length];
+            Storage_T endFactors = allFactors[start + length];
             Storage_T boundsFactors;
             std::set_union(startFactors.begin(), startFactors.end(), endFactors.begin(), endFactors.end(), std::inserter(boundsFactors, boundsFactors.begin()));
 
