@@ -1,88 +1,42 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
+#include "common.hpp"
+#include "primes.hpp"
+#include "validate.hpp"
+#include "io.hpp"
 
-using Storage_T = std::vector<int>;
-
-const int SEARCH_LIMIT = 3000;
-const int LENGTH_LIMIT = 20;
 std::vector<Storage_T> allFactors(SEARCH_LIMIT);
+// Storage_T primes;
 
-// from https://stackoverflow.com/questions/23287/algorithm-to-find-largest-prime-factor-of-a-number
-Storage_T getPrimeFactors(int n) {
-    // std::cout << n << " factors:\n";
-
-    Storage_T factors;
-
-    for (int d = 2; n > 1;) {
-        while (n % d == 0) {
-            factors.push_back(d);
-            n /= d;
-            // std::cout << " " << d;
-        }
-        d++;
-        if (d * d > n) {
-            if (n > 1) {
-                factors.push_back(n);
-                // std::cout << " " << n;
-                break;
-            }
-        }
-    }
-    // std::cout << "\n";
-    return factors;
-}
-
-void generateAllFactors(std::vector<Storage_T>& factors) {
+void generateAllFactors() {
     for (int i = 0; i < SEARCH_LIMIT; i++) {
-        factors[i] = getPrimeFactors(i);
+        allFactors[i] = primes::getPrimeFactors(i);
     }
-}
-
-bool hasIntersection(Storage_T set1, Storage_T set2) {
-    Storage_T intersection;
-    std::set_intersection(set1.begin(), set1.end(), set2.begin(), set2.end(), std::inserter(intersection, intersection.begin()));
-    return intersection.size() != 0;
-}
-
-bool doesRangeShareFactors(int currentStart, int currentLength, Storage_T boundsFactors) {
-    for (int i = 1; i <= currentLength; i++) {
-        // std::cout << "i" << currentStart + i << " ";
-        Storage_T currentFactors = allFactors[currentStart + i];
-        if (!hasIntersection(boundsFactors, currentFactors)) {
-            // std::cout << "no intersection:" << currentStart + i << "\n";
-            return false;
-        }
-    }
-    return true;
 }
 
 int main() {
-    Storage_T theNumbers;
+    Storage_T sequence, boundsFactors;
 
-    generateAllFactors(allFactors);
+    generateAllFactors();
 
-    for (int start = 2; start < SEARCH_LIMIT; start++) {
-        // std::cout << "s" << start << " ";
-        Storage_T startFactors = allFactors[start];
+    for (int start = SEARCH_BEGIN; start < SEARCH_LIMIT; start++) {
+        // std::cout << "s" << start << "\n";
         for (int length = 2; length < LENGTH_LIMIT; length++) {
             // std::cout << start + length << " ";
-            Storage_T endFactors = allFactors[start + length];
-            Storage_T boundsFactors;
-            std::set_union(startFactors.begin(), startFactors.end(), endFactors.begin(), endFactors.end(), std::inserter(boundsFactors, boundsFactors.begin()));
+            boundsFactors.reserve(allFactors[start].size() + allFactors[start + length].size());
+            boundsFactors.insert(boundsFactors.end(), allFactors[start].begin(), allFactors[start].end());
+            boundsFactors.insert(boundsFactors.end(), allFactors[start + length].begin(), allFactors[start + length].end());
+            // io:: displayVector(boundsFactors, "bounds");
 
-            if (doesRangeShareFactors(start, length, boundsFactors)) {
+            if (validate::doesRangeShareFactors(start, length, boundsFactors, allFactors)) {
                 std::cout << "start:" << start << " length:" << length << "\n";
-                theNumbers.push_back(length);
+                if (std::find(sequence.begin(), sequence.end(), length) == sequence.end())
+                    sequence.push_back(length);
             }
+            boundsFactors.clear();
         }
         // std::cout << std::endl;
     }
 
-    std::cout << "result:\n";
-    for (const int& num : theNumbers) {
-        std::cout << num << ",";
-    }
+    io::displayVector(sequence, "Sequence");
 
     return 0;
 }
