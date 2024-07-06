@@ -3,6 +3,10 @@
 #include "validate.hpp"
 #include "io.hpp"
 
+const int SEARCH_LIMIT = 100000;
+const int SEARCH_BEGIN = 2;
+const int LENGTH_LIMIT = 20;
+
 std::vector<Storage_T> allFactors(SEARCH_LIMIT);
 // Storage_T primes;
 
@@ -14,6 +18,8 @@ void generateAllFactors() {
 
 int main() {
     Storage_T sequence, boundsFactors;
+
+    std::cout << "generating Erdos Wood's numbers up to " << SEARCH_LIMIT << " and at a max length of " << LENGTH_LIMIT << "\n";
 
     generateAllFactors();
 

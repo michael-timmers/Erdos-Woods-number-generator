@@ -12,7 +12,7 @@ generator: $(OBJECTS)
 	$(CC) $(CPPFLAGS) -c $< -o $@
 
 run:
-	time ./generator > output
+	time ./generator $(SLIM) $(LLIM) > output
 	open output
 
 all: generator run 
